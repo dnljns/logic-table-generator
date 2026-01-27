@@ -28,8 +28,13 @@ if __name__ == "__main__":
             if char.isalpha() and char not in pin_mapping:
                 pin_mapping[char] = pin_count
                 pin_count += 1
-        
-        selected = pick(list(pin_mapping.keys()) + [output_pin], "Select all active-low pins:", indicator="=>", multiselect=True)
+
+        selected = pick(
+            list(pin_mapping.keys()) + [output_pin],
+            "Select all active-low pins:",
+            indicator="=>",
+            multiselect=True,
+        )
         for pin in selected:
             if pin[0] == output_pin:
                 equation = f"{pin[0]}=not ({equation[2:]})"
@@ -41,7 +46,7 @@ if __name__ == "__main__":
 
         print()
         print(" ".join(list(pin_mapping.keys())), "|", output_pin)
-        print("-"*(len(pin_mapping)*2+3))
+        print("-" * (len(pin_mapping) * 2 + 3))
         for pin_voltages in range(2**pin_count):
             for var in pin_mapping:
                 globals()[var] = (pin_voltages >> pin_mapping[var]) & 1
