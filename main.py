@@ -10,10 +10,14 @@ if __name__ == "__main__":
                 equation for equation in file.readlines() if not equation.isspace()
             ]
     else:
-        equations = [
-            input("Input your logic equation:\n> "),
-        ]
-    equations = [equation.strip().replace(" ", "") for equation in equations]
+        lines = []
+        line = input("Input your logic equation:\n> ")
+        lines.append(line)
+        while line:
+            line = input("> ")
+            lines.append(line)
+        equations = ["\n".join(lines)]
+    equations = ["".join(equation.split()) for equation in equations]
 
     for equation in equations:
         print(equation)
