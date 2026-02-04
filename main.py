@@ -1,5 +1,11 @@
 from sys import argv
 from pick import pick
+from os import name as os_name
+
+if os_name == "nt":
+    import pyreadline3
+else:
+    import readline
 
 operations = {"/": "not", "*": "and", "+": "or"}
 
@@ -20,8 +26,6 @@ if __name__ == "__main__":
     equations = ["".join(equation.split()) for equation in equations]
 
     for equation in equations:
-        print(equation)
-
         pin_count = 0
         pin_mapping = {}
 
@@ -39,17 +43,28 @@ if __name__ == "__main__":
             indicator="=>",
             multiselect=True,
         )
+        print(equation)
 
         for symbol in operations:
             equation = equation.replace(symbol, " %s " % operations[symbol])
+        equation = equation.replace("[", "(").replace("]", ")")
+
+        n_logic = lambda i: i in [n[0] for n in selected]
+        out = []
+        for pin_voltages in range(2**pin_count):
+            out.append([[]])
+            for var in pin_mapping:
+                globals()[var] = i = bool((pin_voltages >> pin_mapping[var]) & 1)
+                out[-1][0].append(int(not i if n_logic(var) else i))
+            o = eval(equation[2:])
+            out[-1].append(int(not o if n_logic(equation[0]) else o))
+            out[-1][0] = int("".join(map(str, out[-1][0])), 2)
+        out.sort()
 
         print()
         print(" ".join(list(pin_mapping.keys())), "|", output_pin)
         print("-" * (len(pin_mapping) * 2 + 3))
-        n_logic = lambda i: i in [n[0] for n in selected]
-        for pin_voltages in range(2**pin_count):
-            for var in pin_mapping:
-                globals()[var] = i = bool((pin_voltages >> pin_mapping[var]) & 1)
-                print(int(not i if n_logic(var) else i), end=" ")
-            o = eval(equation[2:])
-            print("|", int(not o if n_logic(equation[0]) else o))
+        for line in out:
+            print(" ".join(bin(line[0])[2:].zfill(pin_count)), end=" ")
+            print("|", line[1])
+        print()
