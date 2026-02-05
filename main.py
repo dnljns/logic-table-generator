@@ -8,6 +8,7 @@ else:
     import readline
 
 operations = {"/": "not", "*": "and", "+": "or"}
+notation_styles = [("0", "1"), ("F", "T"), ("L", "H")]
 
 if __name__ == "__main__":
     if len(argv) > 1:
@@ -45,6 +46,20 @@ if __name__ == "__main__":
         )
         print(equation)
 
+        notation_type = pick(
+            ["1/0", "T/F", "H/L"],
+            "Choose your notation:",
+            indicator="=>",
+        )[1]
+
+        out_HTML = pick(
+            ["YES", "NO"],
+            "Create .HTML file for table viewing/exporting?",
+            indicator="=>",
+        )
+        if out_HTML[1] == 0:
+            HTML_path = "".join(char for char in equation if char.isalnum()) + ".html"
+
         for symbol in operations:
             equation = equation.replace(symbol, " %s " % operations[symbol])
         equation = equation.replace("[", "(").replace("]", ")")
@@ -64,7 +79,30 @@ if __name__ == "__main__":
         print()
         print(" ".join(list(pin_mapping.keys())), "|", output_pin)
         print("-" * (len(pin_mapping) * 2 + 3))
-        for line in out:
-            print(" ".join(bin(line[0])[2:].zfill(pin_count)), end=" ")
-            print("|", line[1])
+        for i in range(len(out)):
+            line = out[i]
+            ins = list(bin(line[0])[2:].zfill(pin_count))
+            ins = [notation_styles[notation_type][int(n)] for n in ins]
+            outs = notation_styles[notation_type][line[1]]
+            print(" ".join(ins), end=" ")
+            print("|", outs)
+            out[i] = [ins, outs]
         print()
+
+        if out_HTML[1] == 0:
+            out_HTML = f'<table><colgroup><col span="{pin_count}" style="background-color:aqua"><col style="background-color:lime"></colgroup>'
+            out_HTML += "<tr>"
+            out_HTML += (
+                "<th>"
+                + "</th><th>".join(list(pin_mapping.keys()) + [output_pin])
+                + "</th>"
+            )
+            out_HTML += "</tr>"
+            for line in out:
+                out_HTML += "<tr><td>"
+                out_HTML += "</td><td>".join(line[0])
+                out_HTML += f"</td><td>{line[1]}</td>"
+                out_HTML += "</tr>"
+            out_HTML += "</table>"
+            with open(HTML_path, "w+") as file:
+                file.write(out_HTML)
