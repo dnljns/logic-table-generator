@@ -7,7 +7,19 @@ if os_name == "nt":
 else:
     import readline
 
-operations = {"/": "not", "*": "and", "+": "or"}
+operations = {
+    "/": "not",
+    "~": "not",
+    "¬": "not",
+    "*": "and",
+    "∧": "and",
+    "×": "and",
+    "⋅": "and",
+    "&": "and",
+    "+": "or",
+    "∨": "or",
+    "|": "or",
+}
 notation_styles = [("0", "1"), ("F", "T"), ("L", "H")]
 
 if __name__ == "__main__":
