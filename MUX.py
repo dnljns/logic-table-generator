@@ -43,6 +43,13 @@ class MUX:
 
 notation_styles = [("0", "1"), ("F", "T"), ("L", "H")]
 
+
+def notation_apply(iterable: str) -> None:
+    for char in iterable:
+        print(notation_styles[notation_type][int(char)], end="")
+    print(end=" ")
+
+
 if __name__ == "__main__":
     ct = int(input("N-input MUX?\n> "))
     mux = MUX(ct)
@@ -68,11 +75,11 @@ if __name__ == "__main__":
         indicator="=>",
     )
 
-    # notation_type = pick(
-    #    ["1/0", "T/F", "H/L"],
-    #    "Choose your notation:",
-    #    indicator="=>",
-    # )[1]
+    notation_type = pick(
+        ["1/0", "T/F", "H/L"],
+        "Choose your notation:",
+        indicator="=>",
+    )[1]
 
     table = []
     for sel in range(ct):
@@ -91,6 +98,10 @@ if __name__ == "__main__":
     for row in table:
         sel = _BitArray([0] * len(mux.SELECT))
         sel.fill_bits(row[0])
+        notation_apply(str(sel))
+
         dat = _BitArray([0] * len(mux.DATA))
         dat.fill_bits(row[1])
-        print(str(sel), str(dat), "|", row[2])
+        notation_apply(str(dat))
+
+        print("|", notation_styles[notation_type][row[2]])
